@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+    In the below kind of configuration, 3 types of loggings are maintained
+    1 - Console logging STDOUT - picks everything from both main and lib app as its included in <root> logger tag
+    2 - File-Audit - logs only main application level logging and at its level choosen
+    3 - File-Error - logs everything from both main and lib apps as its included in <root> tag
+-->
+
+<configuration>
+
+    <property name="DEV_HOME" value="/opt/logs/parking_lot"/>
+    <timestamp key="bySecond" datePattern="yyyyMMdd.HHmmss"/>
+
+    <appender name="ConsoleLogger" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                [%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M\(%line\)] - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+    <logger name="ConsoleLogger" level="debug" additivity="false">
+        <appender-ref ref="ConsoleLogger"/>
+    </logger>
+
+
+
+    <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DevHome}/parking-app.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}.%M\(%line\)]: %msg%n</Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DevHome}/%d{yyyy/MM/dd}/archived/parking-app.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="org.muks.parking" level="debug" additivity="true">
+        <appender-ref ref="ARES"/>
+    </logger>
+
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="APPLICATION"/>
+    </root>
+</configuration>
