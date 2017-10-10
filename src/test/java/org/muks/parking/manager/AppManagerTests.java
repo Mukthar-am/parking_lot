@@ -14,9 +14,8 @@ public class AppManagerTests {
     private final Logger LOG = LoggerFactory.getLogger("TestLog");
 
     @Test
-    public void ConsumeBasicEvent() {
-        LOG.info("# AresManager tests have started.");
-
+    public void ManagerStartup() {
+        LOG.info("# Parking manager - startup tests.");
         Assert.assertTrue(true);
     }
 }

@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<!--
-    In the below kind of configuration, 3 types of loggings are maintained
-    1 - Console logging STDOUT - picks everything from both main and lib app as its included in <root> logger tag
-    2 - File-Audit - logs only main application level logging and at its level choosen
-    3 - File-Error - logs everything from both main and lib apps as its included in <root> tag
--->
-
 <configuration>
-
-    <property name="DevHome" value="/opt/logs/parking_lot"/>
+    <property name="DevHome" value="/opt/muks/parking_lot/logs"/>
     <timestamp key="bySecond" datePattern="yyyyMMdd.HHmmss"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
