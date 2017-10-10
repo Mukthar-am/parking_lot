@@ -4,12 +4,16 @@
     <groupId>org.muks.parking</groupId>
     <artifactId>parking_lot</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>parking-lot</name>
     <url>http://maven.apache.org</url>
 
 
+    <!--To test the build os of the rpm : rpm -qp &#45;&#45;queryformat "%{PLATFORM}\n" test.rpm-->
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <app.install.dir>/opt/muks/parking</app.install.dir>
+
         <testng.version>6.9.10</testng.version>
         <java.version>1.8</java.version>
         <surefire.version>2.17</surefire.version>
@@ -19,6 +23,10 @@
         <logback.version>1.0.7</logback.version>
         <jcl-over-slf4j.version>1.7.22</jcl-over-slf4j.version>
         <project.java.version>1.8</project.java.version>
+
+        <rpm.name>${project.artifactId}</rpm.name>
+        <rpm.version>${project.version}</rpm.version>
+        <build.space>${project.basedir}/target/build-space</build.space>
     </properties>
 
     <dependencies>
@@ -88,9 +96,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <!--<configuration>-->
-                    <!--<suiteXmlFiles>-->
-                        <!--<suiteXmlFile>test-suite.xml</suiteXmlFile>-->
-                    <!--</suiteXmlFiles>-->
+                <!--<suiteXmlFiles>-->
+                <!--<suiteXmlFile>test-suite.xml</suiteXmlFile>-->
+                <!--</suiteXmlFiles>-->
 
                 <!--</configuration>-->
                 <configuration>
@@ -151,6 +159,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
@@ -162,6 +171,7 @@
                         </filter>
                     </filters>
                 </configuration>
+
                 <executions>
                     <!-- Run shade goal on package phase -->
                     <execution>
@@ -172,6 +182,55 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.1.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-rpm</id>
+                        <goals>
+                            <goal>rpm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <license>GPL (c) 2005, SWWDC</license>
+                    <distribution>Trash 2005</distribution>
+                    <group>Application/Collectors</group>
+                    <packager>SWWDC</packager>
+                    <prefix>/opt/muks/park</prefix>
+
+                    <targetOS>Linux</targetOS>
+
+                    <changelogFile>src/changelog</changelogFile>
+
+                    <defineStatements>
+                        <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                    </defineStatements>
+
+                    <mappings>
+                        <mapping>
+                            <directory>${project.basedir}/target/</directory>
+                            <configuration>true</configuration>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
+                                    <destination>${app.install.dir}</destination>
+                                </source>
+                            </sources>
+                        </mapping>
+                    </mappings>
+                    
+                </configuration>
+            </plugin>
+
+
 
         </plugins>
     </build>
