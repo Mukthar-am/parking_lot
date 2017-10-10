@@ -10,31 +10,32 @@
 
 <configuration>
 
-    <property name="DEV_HOME" value="/opt/logs/parking_lot"/>
+    <property name="DevHome" value="/opt/logs/parking_lot"/>
     <timestamp key="bySecond" datePattern="yyyyMMdd.HHmmss"/>
 
-    <appender name="ConsoleLogger" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                [%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M\(%line\)] - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}.%M\(%line\): %msg%n
             </Pattern>
         </layout>
     </appender>
-    <logger name="ConsoleLogger" level="debug" additivity="false">
-        <appender-ref ref="ConsoleLogger"/>
+
+    <logger name="org.muks.parking" level="debug">
+        <appender-ref ref="STDOUT" />
     </logger>
 
 
 
     <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${DevHome}/parking-app.log</file>
+        <file>${DevHome}/parking_app.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36}.%M\(%line\)]: %msg%n</Pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${DevHome}/%d{yyyy/MM/dd}/archived/parking-app.%i.log
+            <fileNamePattern>${DevHome}/%d{yyyy/MM/dd}/archived/parking_app.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -44,12 +45,21 @@
     </appender>
 
     <logger name="org.muks.parking" level="debug" additivity="true">
-        <appender-ref ref="ARES"/>
+        <appender-ref ref="APPLICATION"/>
     </logger>
 
 
-    <root level="debug">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="APPLICATION"/>
-    </root>
+    <appender name="TestLog" class="ch.qos.logback.core.FileAppender">
+        <file>${DevHome}/tests.log</file>
+        <append>true</append>
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level]: %msg%n</Pattern>
+        </encoder>
+    </appender>
+    <!-- additivity=false ensures analytics events only goes to the analytics log -->
+    <logger name="TestLog" level="debug" additivity="false">
+        <appender-ref ref="TestLog"/>
+    </logger>
+
+
 </configuration>
