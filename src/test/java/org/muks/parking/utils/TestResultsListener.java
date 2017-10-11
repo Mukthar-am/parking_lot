@@ -6,7 +6,7 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 
 
-public class MyTestResultsListener extends TestListenerAdapter {
+public class TestResultsListener extends TestListenerAdapter {
     private final Logger LOG = LoggerFactory.getLogger("TestLog");
     ITestResult iTestResult;
 

@@ -1,5 +1,7 @@
 package org.muks.parking.manager;
 
+import org.muks.parking.space.ParkingLot;
+import org.muks.parking.utils.CommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +13,9 @@ public class ParkingLotOperator implements Runnable {
     private static Logger LOG = LoggerFactory.getLogger(ParkingLotOperator.class);
     private boolean OperateParkingLot;  /** Is false by default */
     private String Command = null;
-    private String Argument = null;
+    private String[] Argument = null;
     private boolean OperationCompleted = false;
+    private CommandExecutor CmdExecutor = new CommandExecutor();
 
     public void startParkingLot() { this.OperateParkingLot = true; }
 
@@ -20,9 +23,9 @@ public class ParkingLotOperator implements Runnable {
 
     private void healthCheck() { LOG.debug("Parking lot is now open..."); }
 
-    public void setCommandAndArgument(String cmd, String arg) {
+    public void setCommandAndArgument(String cmd, String[] args) {
         this.Command = cmd;
-        this.Argument = arg;
+        this.Argument = args;
     }
 
     public void setCommandAndArgument(String cmd) {
@@ -30,6 +33,9 @@ public class ParkingLotOperator implements Runnable {
     }
 
     public boolean isOperationCompleted() { return this.OperationCompleted; }
+
+
+
 
     @Override
     public void run() {
@@ -49,9 +55,10 @@ public class ParkingLotOperator implements Runnable {
                     LOG.info("Command: " + this.Command + ", Argument: " + this.Argument);
 
 
+                    CmdExecutor.execute(this.Command, this.Argument);
+
                     this.Command = null;
                     this.Argument = null;
-
                     this.OperationCompleted = true;
 
                 } catch (Exception e) {

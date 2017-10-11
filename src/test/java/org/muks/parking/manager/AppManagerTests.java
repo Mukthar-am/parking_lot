@@ -1,11 +1,9 @@
 package org.muks.parking.manager;
 
-import org.muks.parking.utils.MyTestResultsListener;
+import org.muks.parking.utils.TestResultsListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -17,7 +15,7 @@ import java.io.ByteArrayInputStream;
  *  All test cases on application manager class functionality
  */
 
-@Listeners(MyTestResultsListener.class)
+@Listeners(TestResultsListener.class)
 public class AppManagerTests {
     private final Logger LOG = LoggerFactory.getLogger("TestLog");
 

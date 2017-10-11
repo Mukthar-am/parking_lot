@@ -96,7 +96,7 @@ public class AppManager {
                     ParkingLotOperatorInstance.setCommandAndArgument(command);
                 } else {
                     String argument = values[1];
-                    ParkingLotOperatorInstance.setCommandAndArgument(command, argument);
+                    ParkingLotOperatorInstance.setCommandAndArgument(command, values);
                 }
 
                 /** Wait for operation to complete before prompting for another user input */

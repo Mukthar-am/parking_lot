@@ -1,6 +1,7 @@
 package org.muks.parking.space;
 
 import org.muks.parking.entities.Vehicle;
+import org.muks.parking.utils.GeneralUtils;
 
 import java.util.Date;
 
@@ -10,25 +11,29 @@ import java.util.Date;
  */
 
 public class ParkingTicket {
-    private Date InDateTime = new Date();
-    private Date OutDateTime = new Date();
+    private String InDateTime = null;
+    private String OutDateTime = null;
     private ParkingSlot ParkedSlot = new ParkingSlot();
-    //private Vehicle ParkedVehicle = new Vehicle();
+
 
     public void setSlot(ParkingSlot slot) { this.ParkedSlot = slot; }
-    //public void setVehicle(Vehicle vehicle) { this.ParkedVehicle = vehicle; }
+    public void setInDateTime(String inDateTime) { this.InDateTime = inDateTime; }
+    public void setOutDateTime(String outDateTime) { this.OutDateTime = outDateTime; }
 
     public ParkingSlot getSlot() { return this.ParkedSlot; }
-    //public Vehicle getVehicle() { return this.ParkedVehicle; }
+
+    public long getDuration() {
+        return GeneralUtils.getDuration(this.InDateTime, this.OutDateTime);
+    }
+
 
     public String toString() {
-        StringBuilder ticketDetails = new StringBuilder("{");
-
+        StringBuilder ticketDetails = new StringBuilder("(");
         ticketDetails.append("In Time: " + this.InDateTime);
         ticketDetails.append("Out Time: " + this.OutDateTime);
         ticketDetails.append("ParkingSlot: " + this.ParkedSlot.toString());
-        //ticketDetails.append("Vehicle: " + this.ParkedVehicle.toString());
-        ticketDetails.append("}");
+        ticketDetails.append("Duration: " + getDuration());
+        ticketDetails.append(")");
 
         return ticketDetails.toString();
     }
