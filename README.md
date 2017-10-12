@@ -38,6 +38,27 @@ maven-3 (Build environment)
 
     Henceforth, the execution is as per the instructions in the requirement doc.
 
+## Controlling test execution and percentage test coverage
+Test execution direct via maven build is controlled by ***maven-surefire-plugin*** and test coverage is controlled by ***jacoco-maven-plugin*** as showed below, a snapshot of the project's pom.xml. Adjust <minimum\>your-value-here-0.0-To-1.0</minimum\>
+
+
+
+    <configuration>
+        <rules>
+            <rule implementation="org.jacoco.maven.RuleConfiguration">
+                <element>BUNDLE</element>
+                <limits>
+                    <limit implementation="org.jacoco.report.check.Limit">
+                        <counter>INSTRUCTION</counter>
+                        <value>COVEREDRATIO</value>
+                        <minimum>0.1</minimum>
+                    </limit>
+                </limits>
+            </rule>
+        </rules>
+    </configuration>
+
+
 
 
 
