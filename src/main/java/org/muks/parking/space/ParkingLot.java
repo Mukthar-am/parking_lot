@@ -13,21 +13,34 @@ import java.util.*;
 
 
 public class ParkingLot {
-    /** Store map based on color as the key for faster search */
+    /**
+     * Store map based on color as the key for faster search
+     */
     //private HashMap<String, HashSet<ParkingSlot>> VehiclesByColor = new HashMap<>();
     private HashMap<String, TreeMap<Integer, ParkingSlot>> VehiclesByColor = new HashMap<>();
 
-    /** Store map based on RegNo as the key for faster search */
+    /**
+     * Store map based on RegNo as the key for faster search
+     */
     private HashMap<String, ParkingSlot> VehiclesByRegNo = new HashMap<>();
     //private HashMap<String, TreeMap<Integer, ParkingSlot>> VehiclesByRegNo = new HashMap<>();
 
-    /** Core parking-lot object having all the slots */
+    /**
+     * Core parking-lot object having all the slots
+     */
     private TreeMap<Integer, ParkingSlot> TheParkingLot = new TreeMap<>();
 
 
-    private int LotSize = 0;    /** init to some slot sizes */
+    private int LotSize = 0;
+    /**
+     * init to some slot sizes
+     */
 
-    private int TotalVehicles = 0;    /** init to some slot sizes */
+    private int TotalVehicles = 0;
+
+    /**
+     * init to some slot sizes
+     */
 
     public ParkingLot(int lotSize) {
         this.LotSize = lotSize;
@@ -78,8 +91,7 @@ public class ParkingLot {
             /** collection by color */
             if (this.VehiclesByColor.containsKey(vehicleColor)) {
                 this.VehiclesByColor.get(vehicleColor).put(parkingSlot.getSlotId(), parkingSlot);
-            }
-            else {
+            } else {
                 this.VehiclesByColor.put(vehicleColor, new TreeMap<>());
                 this.VehiclesByColor.get(vehicleColor).put(parkingSlot.getSlotId(), parkingSlot);
             }
@@ -100,12 +112,11 @@ public class ParkingLot {
     }
 
 
-
     public String queryLot(String query, String queryBy) {
         StringBuilder queryOutput = new StringBuilder();
 
         if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour")
-                || query.equalsIgnoreCase("slot_numbers_for_cars_with_colour") ) {
+                || query.equalsIgnoreCase("slot_numbers_for_cars_with_colour")) {
 
             TreeMap<Integer, ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy.toLowerCase());
             Set<Integer> slotIds = slotsByColor.keySet();
@@ -152,31 +163,41 @@ public class ParkingLot {
 
 
     public String releaseSlot(String commandArgument) {
-        int slotId = Integer.parseInt(commandArgument);
-        ParkingSlot parkingSlot = this.TheParkingLot.get(slotId);
-
         StringBuilder releaseStatus = new StringBuilder();
 
-        /** drop the slot from the parking lot */
-        this.TheParkingLot.put(slotId, new ParkingSlot(slotId));
-        releaseStatus.append("Slot number " + commandArgument + " is free");
+        int slotId = Integer.parseInt(commandArgument);
 
-        this.VehiclesByColor
-                .get(parkingSlot.getVehicleIn().getColor())
-                .remove(parkingSlot.getSlotId());
+        if (this.TheParkingLot.containsKey(slotId)) {
+            ParkingSlot parkingSlot = this.TheParkingLot.get(slotId);
 
-        this.VehiclesByRegNo
-                .remove(parkingSlot.getVehicleIn().getRegistrationNumber());
+            /** drop the slot from the parking lot */
+            this.TheParkingLot.put(slotId, new ParkingSlot(slotId));
+            releaseStatus.append("Slot number " + commandArgument + " is free");
+
+            /** Drop the record from the color based collection */
+            this.VehiclesByColor
+                    .get(parkingSlot.getVehicleIn().getColor())
+                    .remove(parkingSlot.getSlotId());
+
+            /** Drop the record from the RegNo. based collection */
+            this.VehiclesByRegNo
+                    .remove(parkingSlot.getVehicleIn().getRegistrationNumber());
+
+        } else {
+            releaseStatus.append("Slot id not found");
+        }
 
         return releaseStatus.toString();
     }
 
+    /**
+     * @return   - override toString() for formatted output.
+     */
     public String toString() {
         StringBuilder parkingLotDetails = new StringBuilder();
         if (this.TheParkingLot.size() == 0) {
             parkingLotDetails.append("Empty parking lot.");
-        }
-        else {
+        } else {
             parkingLotDetails.append("Slot No" + "\t" + "Registration No." + "\t" + "Color");
 
             for (int slotId = 1; slotId <= this.TheParkingLot.size(); slotId++) {
