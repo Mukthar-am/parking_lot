@@ -63,6 +63,9 @@ public class AppManager {
         else {                      /** Read all the command from the input file and write the output to a out file. */
             String fileInput = args[0];
             appManager.operatorOnFileInputs(fileInput);
+
+            /** shutdown and terminate threads */
+            appManager.operate("end");
         }
     }
 
@@ -77,12 +80,6 @@ public class AppManager {
             System.out.print("\nInput:\n");
             String input = scanner.nextLine();
 
-            /** gracefull kill */
-            if (input.equalsIgnoreCase("end")) {
-                shutdown();
-                System.exit(0);
-            }
-
             /** delegate the input - all for enabling unit testing */
             operate(input);
         }
@@ -91,7 +88,7 @@ public class AppManager {
 
     public void operatorOnFileInputs(String inputFile) {
         FileReader fileReader = null;
-  
+
         try {
             fileReader = new FileReader(inputFile);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -115,17 +112,22 @@ public class AppManager {
                 e.printStackTrace();
             }
         }
-
-        /** shutdown and terminate threads */
-        shutdown();
-        System.exit(0);
     }
 
 
-    /** Operator object to handle all of the input commands */
+    /**
+     * @param input - input command
+     * Description: Operator object to handle all of the input commands
+     */
     public void operate(String input) {
         String[] values = input.split(" ");
         String command = values[0];
+
+        /** gracefull kill, 'end' command called */
+        if (command.equalsIgnoreCase("end")) {
+            shutdown();
+            System.exit(0);
+        }
 
         if (!isValidInput(command)) {
             System.out.println("\nWarning: Invalid command usage: " + CommandUsage + "\n");
@@ -154,6 +156,7 @@ public class AppManager {
             }
         }
     }
+
 
     /**
      * @param command   - input command
@@ -193,6 +196,7 @@ public class AppManager {
 
         OperatorThread.interrupt();
     }
+
 
     /**
      * Description: Shutdown hook processor thread which ensures a graceful shutdown of the application by closing all

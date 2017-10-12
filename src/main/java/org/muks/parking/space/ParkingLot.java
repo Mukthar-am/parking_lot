@@ -14,10 +14,12 @@ import java.util.*;
 
 public class ParkingLot {
     /** Store map based on color as the key for faster search */
-    private HashMap<String, HashSet<ParkingSlot>> VehiclesByColor = new HashMap<>();
+    //private HashMap<String, HashSet<ParkingSlot>> VehiclesByColor = new HashMap<>();
+    private HashMap<String, TreeMap<Integer, ParkingSlot>> VehiclesByColor = new HashMap<>();
 
     /** Store map based on RegNo as the key for faster search */
     private HashMap<String, ParkingSlot> VehiclesByRegNo = new HashMap<>();
+    //private HashMap<String, TreeMap<Integer, ParkingSlot>> VehiclesByRegNo = new HashMap<>();
 
     /** Core parking-lot object having all the slots */
     private TreeMap<Integer, ParkingSlot> TheParkingLot = new TreeMap<>();
@@ -75,16 +77,16 @@ public class ParkingLot {
             /** For all of our analytics and query purpose */
             /** collection by color */
             if (this.VehiclesByColor.containsKey(vehicleColor)) {
-                this.VehiclesByColor.get(vehicleColor).add(parkingSlot);
+                this.VehiclesByColor.get(vehicleColor).put(parkingSlot.getSlotId(), parkingSlot);
             }
             else {
-                this.VehiclesByColor.put(vehicleColor, new HashSet<>());
-                this.VehiclesByColor.get(vehicleColor).add(parkingSlot);
+                this.VehiclesByColor.put(vehicleColor, new TreeMap<>());
+                this.VehiclesByColor.get(vehicleColor).put(parkingSlot.getSlotId(), parkingSlot);
             }
 
 
             /** collection by reg-no.
-             * By the implementation of HashMap, It overrides the value if the key is alrelady found, taking an
+             * By the implementation of HashMap, It overrides the value if the key is already found, taking an
              * advantage of overriding parking ticket, in and out timings if the same vehicle appears for the next time */
             this.VehiclesByRegNo.put(vehicleRegNo, parkingSlot);
 
@@ -104,11 +106,13 @@ public class ParkingLot {
 
         if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour")
                 || query.equalsIgnoreCase("slot_numbers_for_cars_with_colour") ) {
-            HashSet<ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy.toLowerCase());
 
-            Iterator<ParkingSlot> slots = slotsByColor.iterator();
-            while (slots.hasNext()) {
-                ParkingSlot parkignSlot = slots.next();
+            TreeMap<Integer, ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy.toLowerCase());
+            Set<Integer> slotIds = slotsByColor.keySet();
+            Iterator<Integer> slotIdIterator = slotIds.iterator();
+            while (slotIdIterator.hasNext()) {
+                Integer slotId = slotIdIterator.next();
+                ParkingSlot parkignSlot = slotsByColor.get(slotId);
 
                 if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour"))
                     queryOutput.append(parkignSlot.getVehicleIn().getRegistrationNumber());
@@ -116,7 +120,8 @@ public class ParkingLot {
                 if (query.equalsIgnoreCase("slot_numbers_for_cars_with_colour"))
                     queryOutput.append(parkignSlot.getSlotId());
 
-                if (slots.hasNext())
+
+                if (slotIdIterator.hasNext())
                     queryOutput.append(", ");
             }
         }
@@ -148,12 +153,21 @@ public class ParkingLot {
 
     public String releaseSlot(String commandArgument) {
         int slotId = Integer.parseInt(commandArgument);
+        ParkingSlot parkingSlot = this.TheParkingLot.get(slotId);
+
         StringBuilder releaseStatus = new StringBuilder();
 
         /** drop the slot from the parking lot */
         this.TheParkingLot.put(slotId, new ParkingSlot(slotId));
-
         releaseStatus.append("Slot number " + commandArgument + " is free");
+
+        this.VehiclesByColor
+                .get(parkingSlot.getVehicleIn().getColor())
+                .remove(parkingSlot.getSlotId());
+
+        this.VehiclesByRegNo
+                .remove(parkingSlot.getVehicleIn().getRegistrationNumber());
+
         return releaseStatus.toString();
     }
 
@@ -167,6 +181,11 @@ public class ParkingLot {
 
             for (int slotId = 1; slotId <= this.TheParkingLot.size(); slotId++) {
                 ParkingSlot parkingSlot = this.TheParkingLot.get(slotId);
+
+                /** Skip printing empty parking slot */
+                if (parkingSlot.getVehicleIn().getRegistrationNumber() == null)
+                    continue;
+
                 parkingLotDetails.append("\n" +
                         parkingSlot.getSlotId() + "\t" +
                         parkingSlot.getVehicleIn().getRegistrationNumber() + "\t" +
