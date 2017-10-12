@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ParkingLot {
     /** Store map based on color as the key for faster search */
-    private HashMap<String, ParkingSlot> VehiclesByColor = new HashMap<>();
+    private HashMap<String, HashSet<ParkingSlot>> VehiclesByColor = new HashMap<>();
 
     /** Store map based on RegNo as the key for faster search */
     private HashMap<String, ParkingSlot> VehiclesByRegNo = new HashMap<>();
@@ -33,7 +33,7 @@ public class ParkingLot {
             this.TheParkingLot.put(slotId, new ParkingSlot(slotId));
         }
 
-        System.out.println("Slots: "+ this.TheParkingLot.size());
+        System.out.println("Created a parking lot with " + this.TheParkingLot.size() + " slots");
 
     }
 
@@ -44,7 +44,13 @@ public class ParkingLot {
     /**
      * Keep adding slots till the LotSize, and return lot-full exception when requested for more slots
      */
-    public void parkVehicle(String vehicleRegNo, String vehicleColor) {
+    public String parkVehicle(String vehicleRegNo, String vehicleColor) {
+        StringBuilder parkedOutput = new StringBuilder();
+
+        /** flattening strings to lower case to avoid case conflicts. */
+        vehicleColor = vehicleColor.toLowerCase();
+        vehicleRegNo = vehicleRegNo.toLowerCase();
+
         ParkingSlot parkingSlot = getSlotCloseby();     /** Get empty slot, close by */
         if (parkingSlot != null) {
             Vehicle vehicle = new Vehicle();
@@ -65,11 +71,66 @@ public class ParkingLot {
 
             parkingSlot.issueParkingTicket(parkingTicket);
 
+
+            /** For all of our analytics and query purpose */
+            /** collection by color */
+            if (this.VehiclesByColor.containsKey(vehicleColor)) {
+                this.VehiclesByColor.get(vehicleColor).add(parkingSlot);
+            }
+            else {
+                this.VehiclesByColor.put(vehicleColor, new HashSet<>());
+                this.VehiclesByColor.get(vehicleColor).add(parkingSlot);
+            }
+
+
+            /** collection by reg-no.
+             * By the implementation of HashMap, It overrides the value if the key is alrelady found, taking an
+             * advantage of overriding parking ticket, in and out timings if the same vehicle appears for the next time */
+            this.VehiclesByRegNo.put(vehicleRegNo, parkingSlot);
+
+            parkedOutput.append("Allocated slot number: " + parkingSlot.getSlotId());
+
         } else {
-            System.out.println("Sorry, parking lot is full");
+            parkedOutput.append("Sorry, parking lot is full");
         }
+
+        return parkedOutput.toString();
     }
 
+
+
+    public String queryLot(String query, String queryBy) {
+        StringBuilder queryOutput = new StringBuilder();
+
+        if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour")
+                || query.equalsIgnoreCase("slot_numbers_for_cars_with_colour") ) {
+            HashSet<ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy.toLowerCase());
+
+            Iterator<ParkingSlot> slots = slotsByColor.iterator();
+            while (slots.hasNext()) {
+                ParkingSlot parkignSlot = slots.next();
+
+                if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour"))
+                    queryOutput.append(parkignSlot.getVehicleIn().getRegistrationNumber());
+
+                if (query.equalsIgnoreCase("slot_numbers_for_cars_with_colour"))
+                    queryOutput.append(parkignSlot.getSlotId());
+
+                if (slots.hasNext())
+                    queryOutput.append(", ");
+            }
+        }
+
+
+        if (query.equalsIgnoreCase("slot_number_for_registration_number")) {
+            if (this.VehiclesByRegNo.containsKey(queryBy.toLowerCase()))
+                queryOutput.append(this.VehiclesByRegNo.get(queryBy.toLowerCase()).getSlotId());
+            else
+                queryOutput.append("Not found");
+        }
+
+        return queryOutput.toString();
+    }
 
     private ParkingSlot getSlotCloseby() {
         ParkingSlot emptySlot = null;
@@ -85,15 +146,29 @@ public class ParkingLot {
     }
 
 
+    public String releaseSlot(String commandArgument) {
+        int slotId = Integer.parseInt(commandArgument);
+        StringBuilder releaseStatus = new StringBuilder();
+
+        /** drop the slot from the parking lot */
+        this.TheParkingLot.put(slotId, new ParkingSlot(slotId));
+
+        releaseStatus.append("Slot number " + commandArgument + " is free");
+        return releaseStatus.toString();
+    }
+
     public String toString() {
-        StringBuilder parkingLotDetails = new StringBuilder("\n");
+        StringBuilder parkingLotDetails = new StringBuilder();
         if (this.TheParkingLot.size() == 0) {
             parkingLotDetails.append("Empty parking lot.");
         }
         else {
+            parkingLotDetails.append("Slot No" + "\t" + "Registration No." + "\t" + "Color");
+
             for (int slotId = 1; slotId <= this.TheParkingLot.size(); slotId++) {
                 ParkingSlot parkingSlot = this.TheParkingLot.get(slotId);
-                System.out.println(parkingSlot.getSlotId() + "\t" +
+                parkingLotDetails.append("\n" +
+                        parkingSlot.getSlotId() + "\t" +
                         parkingSlot.getVehicleIn().getRegistrationNumber() + "\t" +
                         parkingSlot.getVehicleIn().getColor()
                 );

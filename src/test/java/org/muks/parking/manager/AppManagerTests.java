@@ -4,10 +4,12 @@ import org.muks.parking.utils.TestResultsListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
+import java.io.*;
 
 /**
  * Created by 300000511 on 09/10/17
@@ -18,6 +20,19 @@ import java.io.ByteArrayInputStream;
 @Listeners(TestResultsListener.class)
 public class AppManagerTests {
     private final Logger LOG = LoggerFactory.getLogger("TestLog");
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+    @BeforeMethod
+    public void captureSysout() {
+        // Start capturing
+        System.setOut(new PrintStream(buffer));
+    }
+
+    @AfterMethod
+    public void releaseSysout() {
+        // release
+        buffer.reset();
+    }
 
 
     @Test
@@ -29,9 +44,16 @@ public class AppManagerTests {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         AppManager appManager = new AppManager();
-        String actualOutput = appManager.operate(data);
+        appManager.operate(data);
+
+        // Stop capturing
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+
+        // Use captured content
+        String actualOutput = buffer.toString();
+
         actualOutput = actualOutput.replace("\n", "").replace("\r", "");
-        LOG.info("Expected: " + expectedOutput + "\nActual: " + actualOutput);
+        System.out.println("Expected: " + expectedOutput + "\nActual: " + actualOutput);
 
         data = "end";
         appManager.operate(data);
@@ -40,67 +62,6 @@ public class AppManagerTests {
         Assert.assertEquals(expectedOutput, actualOutput);
     }
 
-
-    @Test
-    public void TestValidParkCommand() {
-        String expectedOutput = "| Successfully complete the operation: \"park\" |";
-
-        String data = "park ka-05-ha-540";
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        AppManager appManager = new AppManager();
-        String actualOutput = appManager.operate(data);
-        actualOutput = actualOutput.replace("\n", "").replace("\r", "");
-        LOG.info("Expected: " + expectedOutput + "\nActual: " + actualOutput);
-
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        Assert.assertEquals(expectedOutput, actualOutput);
-    }
-
-    @Test
-    public void TestStatusCommand() {
-        String expectedOutput = "| Successfully complete the operation: \"status\" |";
-
-        String data = "status";
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        AppManager appManager = new AppManager();
-        String actualOutput = appManager.operate(data);
-        actualOutput = actualOutput.replace("\n", "").replace("\r", "");
-        LOG.info("Expected: " + expectedOutput + "\nActual: " + actualOutput);
-
-
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        Assert.assertEquals(expectedOutput, actualOutput);
-    }
-
-
-    @Test
-    public void TestStatusCommandWithInvalidArgs() {
-        LOG.info("# Test: ValidCommandWhileStartup");
-        String expectedOutput = "| Successfully complete the operation: \"status\" |";
-
-        String data = "status ka-05-ha-540";
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        AppManager appManager = new AppManager();
-        String actualOutput = appManager.operate(data);
-        actualOutput = actualOutput.replace("\n", "").replace("\r", "");
-        LOG.info("Expected: " + expectedOutput + "\nActual: " + actualOutput);
-
-
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        Assert.assertEquals(expectedOutput, actualOutput);
-    }
 
 
     @Test
@@ -112,9 +73,14 @@ public class AppManagerTests {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         AppManager appManager = new AppManager();
-        String actualOutput = appManager.operate(data);
+        appManager.operate(data);
+        // Stop capturing
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+
+        // Use captured content
+        String actualOutput = buffer.toString();
         actualOutput = actualOutput.replace("\n", "").replace("\r", "");
-        LOG.info("Expected: " + expectedOutput + "\nActual: " + actualOutput);
+        System.out.println("Expected: " + expectedOutput + "\nActual: " + actualOutput);
 
         data = "end";
         appManager.operate(data);

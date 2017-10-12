@@ -13,7 +13,7 @@ import java.util.Date;
 public class ParkingTicket {
     private String InDateTime = null;
     private String OutDateTime = null;
-    private ParkingSlot ParkedSlot = new ParkingSlot();
+    private ParkingSlot ParkedSlot = null;
 
 
     public void setSlot(ParkingSlot slot) { this.ParkedSlot = slot; }

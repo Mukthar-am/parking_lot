@@ -54,17 +54,10 @@ public class AppManager {
 
 
     public void operator() {
-        LOG.debug("# Opening up parking lot for occupancy.... ");
-
-        if (OperatorThread.isAlive())
-            LOG.info("OperatorThread is alive");
-        else
-            LOG.info("Not alive...");
-
         while (keepOperational) {
             Scanner scanner = new Scanner(System.in);
 
-            System.out.print("Input command...?\n");
+            System.out.print("\nInput:\n");
             String input = scanner.nextLine();
 
             /** gracefull kill */
@@ -75,22 +68,21 @@ public class AppManager {
             }
 
             /** deligate the input - all for enabling unit testing */
-            LOG.info( operate(input) );
+            operate(input);
         }
     }
 
 
-    public String operate(String input) {
-        String returnMsg = null;
+    public void operate(String input) {
 
         String[] values = input.split(" ");
         String command = values[0];
 
         if (!isValidInput(command)) {
-            returnMsg = "\nWarning: Invalid command usage: " + CommandUsage + "\n";
+            System.out.println("\nWarning: Invalid command usage: " + CommandUsage + "\n");
         } else {
             if (!command.equalsIgnoreCase("status") && values.length == 1) {
-                returnMsg = "\nWarning: Invalid arguments: " + ArgumentUsage + "\n";
+                System.out.println("\nWarning: Invalid arguments: " + ArgumentUsage + "\n");
             } else {
                 if (command.equalsIgnoreCase("status")) {
                     ParkingLotOperatorInstance.setCommandAndArgument(command);
@@ -109,11 +101,8 @@ public class AppManager {
                         e.printStackTrace();
                     }
                 }
-                returnMsg = "| Successfully complete the operation: \"" + command + "\" |";
             }
         }
-
-        return returnMsg;
     }
 
     private static boolean isValidInput(String command) {

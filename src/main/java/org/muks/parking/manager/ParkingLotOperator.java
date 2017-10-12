@@ -52,9 +52,6 @@ public class ParkingLotOperator implements Runnable {
                 this.OperationCompleted = false;
                 try {
                     /** parking lot handler logic */
-                    LOG.info("Command: " + this.Command + ", Argument: " + this.Argument);
-
-
                     CmdExecutor.execute(this.Command, this.Argument);
 
                     this.Command = null;
