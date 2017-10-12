@@ -40,7 +40,7 @@ public class CommandTests {
         String expectedOutput = "Created a parking lot with 2 slots\n" +
                 "Allocated slot number: 1\n" +
                 "Slot No\tRegistration No.\tColor\n" +
-                "1\tka-05-ha-450\tsilver\n";
+                "1\tKA-05-HA-450\tsilver\n";
 
         String data = "create_parking_lot 2";
         System.setIn(new ByteArrayInputStream(data.getBytes()));
@@ -117,9 +117,7 @@ public class CommandTests {
     @Test
     public void TestStatusCommand() {
         String expectedOutput = "Created a parking lot with 2 slots\n" +
-                "Slot No\tRegistration No.\tColor\n" +
-                "1\tnull\tnull\n" +
-                "2\tnull\tnull\n";
+                "Slot No\tRegistration No.\tColor\n";
 
         String data = "create_parking_lot 2";
         System.setIn(new ByteArrayInputStream(data.getBytes()));
@@ -154,9 +152,9 @@ public class CommandTests {
             e.printStackTrace();
         }
 
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
+//        data = "end";
+//        appManager.operate(data);
+//        System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         Assert.assertEquals(actualOutput, expectedOutput);
     }
@@ -201,9 +199,9 @@ public class CommandTests {
         System.out.println("Actual: " + actualOutput);
 
 
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
+//        data = "end";
+//        appManager.operate(data);
+//        System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         if (actualOutput.contains("ArrayIndexOutOfBoundsException"))
             Assert.assertTrue(true);
@@ -224,14 +222,14 @@ public class CommandTests {
                 "Allocated slot number: 6\n" +
                 "Slot number 4 is free\n" +
                 "Slot No\tRegistration No.\tColor\n" +
-                "1\tka-01-hh-1234\twhite\n" +
-                "2\tka-01-hh-9999\twhite\n" +
-                "3\tka-01-bb-0001\tblack\n" +
-                "5\tka-01-hh-2701\tblue\n" +
-                "6\tka-01-hh-3141\tblack\n" +
+                "1\tKA-01-HH-1234\tWhite\n" +
+                "2\tKA-01-HH-9999\tWhite\n" +
+                "3\tKA-01-BB-0001\tBlack\n" +
+                "5\tKA-01-HH-2701\tBlue\n" +
+                "6\tKA-01-HH-3141\tBlack\n" +
                 "Allocated slot number: 4\n" +
                 "Sorry, parking lot is full\n" +
-                "ka-01-hh-1234, ka-01-hh-9999, ka-01-p-333\n" +
+                "KA-01-HH-1234, KA-01-HH-9999, KA-01-P-333\n" +
                 "1, 2, 4\n" +
                 "6\n" +
                 "Not found\n";

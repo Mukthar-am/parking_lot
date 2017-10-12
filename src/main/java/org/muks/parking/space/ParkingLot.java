@@ -62,10 +62,6 @@ public class ParkingLot {
     public String parkVehicle(String vehicleRegNo, String vehicleColor) {
         StringBuilder parkedOutput = new StringBuilder();
 
-        /** flattening strings to lower case to avoid case conflicts. */
-        vehicleColor = vehicleColor.toLowerCase();
-        vehicleRegNo = vehicleRegNo.toLowerCase();
-
         ParkingSlot parkingSlot = getSlotCloseby();     /** Get empty slot, close by */
         if (parkingSlot != null) {
             Vehicle vehicle = new Vehicle();
@@ -118,7 +114,8 @@ public class ParkingLot {
         if (query.equalsIgnoreCase("registration_numbers_for_cars_with_colour")
                 || query.equalsIgnoreCase("slot_numbers_for_cars_with_colour")) {
 
-            TreeMap<Integer, ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy.toLowerCase());
+            TreeMap<Integer, ParkingSlot> slotsByColor = this.VehiclesByColor.get(queryBy);
+
             Set<Integer> slotIds = slotsByColor.keySet();
             Iterator<Integer> slotIdIterator = slotIds.iterator();
             while (slotIdIterator.hasNext()) {
@@ -139,8 +136,8 @@ public class ParkingLot {
 
 
         if (query.equalsIgnoreCase("slot_number_for_registration_number")) {
-            if (this.VehiclesByRegNo.containsKey(queryBy.toLowerCase()))
-                queryOutput.append(this.VehiclesByRegNo.get(queryBy.toLowerCase()).getSlotId());
+            if (this.VehiclesByRegNo.containsKey(queryBy))
+                queryOutput.append(this.VehiclesByRegNo.get(queryBy).getSlotId());
             else
                 queryOutput.append("Not found");
         }
@@ -175,13 +172,15 @@ public class ParkingLot {
             releaseStatus.append("Slot number " + commandArgument + " is free");
 
             /** Drop the record from the color based collection */
-            this.VehiclesByColor
-                    .get(parkingSlot.getVehicleIn().getColor())
-                    .remove(parkingSlot.getSlotId());
+            if (parkingSlot.isOccupied()) {
+                this.VehiclesByColor
+                        .get(parkingSlot.getVehicleIn().getColor())
+                        .remove(parkingSlot.getSlotId());
 
-            /** Drop the record from the RegNo. based collection */
-            this.VehiclesByRegNo
-                    .remove(parkingSlot.getVehicleIn().getRegistrationNumber());
+                /** Drop the record from the RegNo. based collection */
+                this.VehiclesByRegNo
+                        .remove(parkingSlot.getVehicleIn().getRegistrationNumber());
+            }
 
         } else {
             releaseStatus.append("Slot id not found");

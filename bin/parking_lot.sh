@@ -14,15 +14,8 @@ else
     fileInput=$1    # as first argument is the input file-name, expected to be found at the same path
     #echo "# Parsing input file $fileInput"
 
-    appStartCmd="java -cp /opt/muks/parking_lot/lib/parking_lot-1.0.jar org.muks.parking.manager.AppManager"
+    appStartCmd="java -cp /opt/muks/parking_lot/lib/parking_lot-1.0.jar org.muks.parking.manager.AppManager $fileInput"
     $appStartCmd
-
-    sleep 3
-
-    while read line; do
-        system.in $line
-        sleep 3
-    done < $fileInput
 
 fi
 

@@ -55,9 +55,9 @@ public class AppManagerTests {
         actualOutput = actualOutput.replace("\n", "").replace("\r", "");
         System.out.println("Expected: " + expectedOutput + "\nActual: " + actualOutput);
 
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
+//        data = "end";
+//        appManager.operate(data);
+//        System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         Assert.assertEquals(expectedOutput, actualOutput);
     }
@@ -81,10 +81,6 @@ public class AppManagerTests {
         String actualOutput = buffer.toString();
         actualOutput = actualOutput.replace("\n", "").replace("\r", "");
         System.out.println("Expected: " + expectedOutput + "\nActual: " + actualOutput);
-
-        data = "end";
-        appManager.operate(data);
-        System.setIn(new ByteArrayInputStream(data.getBytes()));
 
         Assert.assertEquals(expectedOutput, actualOutput);
     }

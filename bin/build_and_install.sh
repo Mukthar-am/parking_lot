@@ -32,7 +32,7 @@ pwd=`pwd`
 echo "Currently @ $pwd"
 
 
-buildCmd="mvn clean install -DskipTests=true"
+buildCmd="mvn clean install"
 buildLog="$pwd/build.log"
 finalBuildCmd=$buildCmd" > "$buildLog" 2>&1"
 echo "Executing build command: $finalBuildCmd"
@@ -60,3 +60,7 @@ $fileListingAppPath
 
 fileListingBinPath="ls -l $binDir"
 $fileListingBinPath
+
+commandInputFile="file_inputs.txt"
+commandFileInputs="cp -rf bin/$commandInputFile $binDir"
+$commandFileInputs
