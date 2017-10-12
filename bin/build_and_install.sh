@@ -8,7 +8,6 @@ echo "#=========================================================================
 # Check if the execution user has root previlidges
 USAGE="Usage: sh build_and_install.sh /opt/parking_lot\n"
 
-appDir="/opt/muks/parking_lot"
 if [ $# -eq 0 ]
 then
     echo "Please provide the app installation path.
@@ -16,6 +15,7 @@ then
     exit
 fi
 
+appDir=$1
 logsDir="$appDir/logs"
 binDir="$appDir/bin"
 libDir="$appDir/lib"
