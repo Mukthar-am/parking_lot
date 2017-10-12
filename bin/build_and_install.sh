@@ -32,9 +32,9 @@ pwd=`pwd`
 echo "Currently @ $pwd"
 
 
-buildCmd="mvn clean install"
-buildLog="build.log"
-finalBuildCmd=$buildCmd." > ".$buildLog." 2>&1"
+buildCmd="mvn clean install -DskipTests=true"
+buildLog="$pwd/build.log"
+finalBuildCmd=$buildCmd" > "$buildLog" 2>&1"
 echo "Executing build command: $finalBuildCmd"
 
 $buildCmd
@@ -43,8 +43,20 @@ echo "# Printing contents of target build directory for reference usage."
 fileListing="ls -l target"
 $fileListing
 
+# Coping bin and lib files at the app install path
 cpBinFiles="cp -rf bin/parking_lot.sh $binDir"
 cpAppLib="cp -rf target/parking_lot-1.0.jar $libDir"
-
 $cpBinFiles
 $cpAppLib
+
+
+# Change bin files permissions to executable so that ./ is a valid execution method as per doc
+changePermissions="chmod -R a+x $binDir"
+$changePermissions
+
+# listing of parent level dir at the end.
+fileListingAppPath="ls -l $libDir"
+$fileListingAppPath
+
+fileListingBinPath="ls -l $binDir"
+$fileListingBinPath

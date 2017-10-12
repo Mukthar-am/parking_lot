@@ -3,6 +3,10 @@ package org.muks.parking.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -33,16 +37,10 @@ public class AppManager {
             "slot_number_for_registration_number <reg.no> " +
             "slot_numbers_for_cars_with_colour <color>";
 
-    ParkingLotOperator ParkingLotOperatorInstance = null;
-    Thread OperatorThread = null;
+    private ParkingLotOperator ParkingLotOperatorInstance = null;
+    private Thread OperatorThread = null;
 
-
-    public static void main(String[] args) {
-        AppManager appManager = new AppManager();
-        appManager.operator();
-    }
-
-
+    /** Constructor overloading for init of the Thread class and thread object */
     public AppManager() {
         /** have a parking lot operator */
         ParkingLotOperatorInstance = new ParkingLotOperator();
@@ -50,9 +48,28 @@ public class AppManager {
         OperatorThread.start();
         ParkingLotOperatorInstance.startParkingLot();
 
+        /** graceful shutdown */
+        Runtime.getRuntime().addShutdownHook(new ProcessorHook());
     }
 
 
+    public static void main(String[] args) {
+        AppManager appManager = new AppManager();
+
+        if (args.length == 0) {     /** If no args, then interact with user from CLI/Java-Scanner */
+            System.out.println("no args, sending it to operate");
+            appManager.operator();
+        }
+        else {                      /** Read all the command from the input file and write the output to a out file. */
+            String fileInput = args[0];
+            appManager.operatorOnFileInputs(fileInput);
+        }
+    }
+
+
+    /**
+     * Description - operator() having this, enables us for test coverage
+     */
     public void operator() {
         while (keepOperational) {
             Scanner scanner = new Scanner(System.in);
@@ -62,32 +79,65 @@ public class AppManager {
 
             /** gracefull kill */
             if (input.equalsIgnoreCase("end")) {
-                LOG.debug("# Shutting down parking facility now... ");
-                ParkingLotOperatorInstance.shutdownParkingLot();
+                shutdown();
                 System.exit(0);
             }
 
-            /** deligate the input - all for enabling unit testing */
+            /** delegate the input - all for enabling unit testing */
             operate(input);
         }
     }
 
 
-    public void operate(String input) {
+    public void operatorOnFileInputs(String inputFile) {
+        FileReader fileReader = null;
+  
+        try {
+            fileReader = new FileReader(inputFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
+            String readLine = null;
+            while ((readLine = bufferedReader.readLine()) != null) {
+                operate(readLine);
+                Thread.sleep(3000);
+            }
+
+            bufferedReader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            try {
+                fileReader.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /** shutdown and terminate threads */
+        shutdown();
+        System.exit(0);
+    }
+
+
+    /** Operator object to handle all of the input commands */
+    public void operate(String input) {
         String[] values = input.split(" ");
         String command = values[0];
 
         if (!isValidInput(command)) {
             System.out.println("\nWarning: Invalid command usage: " + CommandUsage + "\n");
+
         } else {
             if (!command.equalsIgnoreCase("status") && values.length == 1) {
                 System.out.println("\nWarning: Invalid arguments: " + ArgumentUsage + "\n");
+
             } else {
                 if (command.equalsIgnoreCase("status")) {
                     ParkingLotOperatorInstance.setCommandAndArgument(command);
                 } else {
-                    String argument = values[1];
                     ParkingLotOperatorInstance.setCommandAndArgument(command, values);
                 }
 
@@ -105,6 +155,10 @@ public class AppManager {
         }
     }
 
+    /**
+     * @param command   - input command
+     * @return          - 'true' if valid else 'false'
+     */
     private static boolean isValidInput(String command) {
         if (command.equalsIgnoreCase("create_parking_lot") ||
                 command.equalsIgnoreCase("park") ||
@@ -118,5 +172,37 @@ public class AppManager {
         }
 
         return false;
+    }
+
+
+    /**
+     * Description: Used by the shutdown hook which is eventually used to kill intermediately.
+     * VERY IMPORTANT to have so that the thread is not left out as a demon thread.
+     */
+    private void shutdown() {
+        //LOG.debug("# Shutting down parking facility now... ");
+        ParkingLotOperatorInstance.shutdownParkingLot();
+
+        /** Since there is a sleep of 1 at the thread, we need to wait to come out of run()
+         * However, sleep at the run() is required so that the thread digests the input command */
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        OperatorThread.interrupt();
+    }
+
+    /**
+     * Description: Shutdown hook processor thread which ensures a graceful shutdown of the application by closing all
+     * opened threads as well.
+     */
+    private class ProcessorHook extends Thread {
+        @Override
+        public void run() {
+            //LOG.warn("# From shutdown-hook, force shutdown all the running threads.");
+            shutdown();
+        }
     }
 }

@@ -4,10 +4,6 @@ import org.muks.parking.space.ParkingLot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by 300000511 on 11/10/17.
  */

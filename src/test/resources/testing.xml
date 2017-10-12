@@ -6,6 +6,7 @@
     <test name="Parallel Test Mode" group-by-instances="true">
         <classes>
             <class name="org.muks.parking.manager.AppManagerTests" />
+            <class name="org.muks.parking.manager.CommandTests" />
         </classes>
     </test>
 
