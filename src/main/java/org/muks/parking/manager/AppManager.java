@@ -1,8 +1,5 @@
 package org.muks.parking.manager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +13,7 @@ import java.util.Scanner;
 
 
 public class AppManager {
-    private static Logger LOG = LoggerFactory.getLogger(AppManager.class);
+    //private static Logger LOG = LoggerFactory.getLogger(AppManager.class);
     private static boolean keepOperational = true;
 
     private static String CommandUsage = "\n" +
@@ -57,7 +54,6 @@ public class AppManager {
         AppManager appManager = new AppManager();
 
         if (args.length == 0) {     /** If no args, then interact with user from CLI/Java-Scanner */
-            System.out.println("no args, sending it to operate");
             appManager.operator();
         }
         else {                      /** Read all the command from the input file and write the output to a out file. */
@@ -133,7 +129,10 @@ public class AppManager {
             System.out.println("\nWarning: Invalid command usage: " + CommandUsage + "\n");
 
         } else {
-            if (!command.equalsIgnoreCase("status") && values.length == 1) {
+            if (command.equalsIgnoreCase("park") && values.length < 3) {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+            else if (!command.equalsIgnoreCase("status") && values.length == 1) {
                 System.out.println("\nWarning: Invalid arguments: " + ArgumentUsage + "\n");
 
             } else {

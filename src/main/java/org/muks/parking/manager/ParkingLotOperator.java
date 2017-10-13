@@ -1,16 +1,13 @@
 package org.muks.parking.manager;
 
-import org.muks.parking.space.ParkingLot;
 import org.muks.parking.utils.CommandExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by 300000511 on 11/10/17
  */
 
 public class ParkingLotOperator implements Runnable {
-    private static Logger LOG = LoggerFactory.getLogger(ParkingLotOperator.class);
+    //private static Logger LOG = LoggerFactory.getLogger(ParkingLotOperator.class);
     private boolean OperateParkingLot;  /** Is false by default */
     private String Command = null;
     private String[] Argument = null;
@@ -21,7 +18,8 @@ public class ParkingLotOperator implements Runnable {
 
     public void shutdownParkingLot() { this.OperateParkingLot = false; }
 
-    private void healthCheck() { LOG.debug("Parking lot is now open..."); }
+    private void healthCheck() {
+        System.out.println("Parking lot is now open..."); }
 
     public void setCommandAndArgument(String cmd, String[] args) {
         this.Command = cmd;
@@ -59,7 +57,7 @@ public class ParkingLotOperator implements Runnable {
                     this.OperationCompleted = true;
 
                 } catch (Exception e) {
-                    LOG.error("Exception: ", e);
+                    e.printStackTrace();
                 }
             }
         }

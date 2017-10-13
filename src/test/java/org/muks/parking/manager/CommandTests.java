@@ -1,9 +1,7 @@
 package org.muks.parking.manager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
+import org.testng.TestException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,7 +14,7 @@ import java.lang.reflect.Method;
  * Testing all the input commands.
  */
 public class CommandTests {
-    private final Logger LOG = LoggerFactory.getLogger("TestLog");
+//    private final Logger LOG = LoggerFactory.getLogger("TestLog");
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     @BeforeMethod
@@ -160,9 +158,10 @@ public class CommandTests {
     }
 
 
-
-
-    @Test
+    /**
+     * Throw a right exception and catch for right test execution
+     */
+    @Test(expectedExceptions = ArrayIndexOutOfBoundsException.class)
     public void TestStatusCommandWithInvalidArgs() {
         String data = "create_parking_lot 2";
         System.setIn(new ByteArrayInputStream(data.getBytes()));
@@ -171,7 +170,7 @@ public class CommandTests {
         appManager.operate(data);
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -195,19 +194,12 @@ public class CommandTests {
 
         // Use captured content
         String actualOutput = buffer.toString();
-
         System.out.println("Actual: " + actualOutput);
 
-
-//        data = "end";
-//        appManager.operate(data);
-//        System.setIn(new ByteArrayInputStream(data.getBytes()));
-
-        if (actualOutput.contains("ArrayIndexOutOfBoundsException"))
+        if (actualOutput.contains("Created a parking lot with 2 slots"))
             Assert.assertTrue(true);
         else
             Assert.assertTrue(false);
-
     }
 
 
@@ -236,7 +228,6 @@ public class CommandTests {
 
         String inputFile = "/file_inputs.txt";
         File commandsInFile = new File(this.getClass().getResource(inputFile).getFile());
-        LOG.debug("File Input:- " + commandsInFile.getAbsolutePath());
 
         // Start capturing
         System.setOut(new PrintStream(buffer));
@@ -250,7 +241,7 @@ public class CommandTests {
         // Use captured content
         String actualOutput = buffer.toString();
 
-        LOG.debug("Expected: " + expectedOutput + "\nActual: " + actualOutput);
+        System.out.println("Expected: " + expectedOutput + "\nActual: " + actualOutput);
 
 //        try {
 //            Thread.sleep(5000);

@@ -1,14 +1,12 @@
 package org.muks.parking.utils;
 
 import org.muks.parking.space.ParkingLot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by 300000511 on 11/10/17.
  */
 public class CommandExecutor {
-    private static Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
+    //private static Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
     ParkingLot OurParkingLot = null;
 
 
