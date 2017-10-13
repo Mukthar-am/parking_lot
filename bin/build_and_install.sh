@@ -36,7 +36,7 @@ pwd=`pwd`
 echo "Currently @ $pwd"
 
 
-buildCmd="mvn clean install"
+buildCmd="mvn clean install -DskipTests=true"
 buildLog="$pwd/build.log"
 finalBuildCmd=$buildCmd" > "$buildLog" 2>&1"
 echo "Executing build command: $finalBuildCmd"
