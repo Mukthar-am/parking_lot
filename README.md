@@ -8,6 +8,19 @@ maven-3 (Build environment)
 
 
 ## Getting started / installation instructions
+### Build and execution make simple
+Check out the project and run the below command.
+
+Command to find help
+
+    ./parking_lot.sh -help
+
+
+Command to find help
+
+    ./parking_lot.sh file_inputs.txt
+
+
 1. Check out/clone the project locally.
 2. Navigate to bin director for automated build and installation, where the build_and_install.sh script is.
 
