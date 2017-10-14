@@ -7,20 +7,18 @@ JDK-8 (Dev and application run environment)
 maven-3 (Build environment)
 
 
-## Getting started / installation instructions
 ### Build and execution made simple
-Check out the project and run the below command.
-
 Command to find help
 
     ./parking_lot.sh -help
 
 
-Command to find help
+Command build and execution in one go
 
     ./parking_lot.sh file_inputs.txt
 
-
+## Getting started / installation instructions
+Check out the project and run the below command.
 1. Check out/clone the project locally.
 2. Navigate to bin director for automated build and installation, where the build_and_install.sh script is.
 
