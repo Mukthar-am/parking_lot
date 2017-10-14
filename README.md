@@ -8,7 +8,7 @@ maven-3 (Build environment)
 
 
 ## Getting started / installation instructions
-### Build and execution make simple
+### Build and execution made simple
 Check out the project and run the below command.
 
 Command to find help
